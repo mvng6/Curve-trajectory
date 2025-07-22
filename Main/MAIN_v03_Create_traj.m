@@ -57,6 +57,9 @@ traj_cartesian(:,1:3) = traj_cartesian(:,1:3)/1000;
 % deg -> rad 단위 변환
 traj_cartesian(:,4:6) = deg2rad(traj_cartesian(:,4:6));
 
+%%
+diff(traj_cartesian(:,1:3))
+
 %% 6) Cartesian -> Quaternion 변환
 traj_quaternion = zeros(size(traj_cartesian,1),7);
 
@@ -98,7 +101,6 @@ end
 
 
 %% 9) Result Plot
-
 joint_vel = diff(rad2deg(jointPath)) * ctrl_freq;
 joint_acc = diff(joint_vel) * ctrl_freq;
 joint_jerk = diff(joint_acc) * ctrl_freq;
