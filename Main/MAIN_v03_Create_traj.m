@@ -57,93 +57,74 @@ traj_cartesian(:,1:3) = traj_cartesian(:,1:3)/1000;
 % deg -> rad 단위 변환
 traj_cartesian(:,4:6) = deg2rad(traj_cartesian(:,4:6));
 
-%%
-diff(traj_cartesian(:,1:3))
+% 각 구간 사이의 길이 계산
+d = sqrt(sum(diff(traj_cartesian(:,1:3)).^2,2));
 
-%% 6) Cartesian -> Quaternion 변환
-traj_quaternion = zeros(size(traj_cartesian,1),7);
+s = [0; cumsum(d)];
 
-traj_quaternion(:,1:3) = traj_cartesian(:,1:3);
-traj_quaternion(:,4:7) = eul2quat(traj_cartesian(:,4:6),'ZYZ');
+%% 6) 원하는 이동 속도에 대한 시간 정하기
+v_des   = 0.1;              % [m/s]
+dt      = 0.001;            % 1kHz 제어 간격
+L       = s(end);           % 경로 전체 길이
+T       = L/v_des;          % 전체 이동 소요 시간
+t_new   = (0:dt:T)';        % 0초에서 T 초까지 1ms(dt) 간격
+s_new   = v_des * t_new;    % 시간 -> 호 길이 매핑 : t_new -> s_new
 
-% 관절 각도 변화의 연속성 보장
-traj_quaternion(:,4:6) = unwrap(traj_quaternion(:,4:6),[],1);
+%% 7) 호 길이 기반 등속도 재샘플링
 
-%% 7) Task-Space 경로 생성
+% (1) 원본 위치와 자세(쿼터니언) 분리
+pts = traj_cartesian(:,1:3);
+quat_orig = eul2quat(traj_cartesian(:,4:6),'ZYZ');
+quat_orig = unwrap(quat_orig,[],1);
 
-pathtform = zeros(4,4,size(traj_quaternion,1));
-for idx_task = 1:size(pathtform,3)
-    cal_tform = se3(quat2rotm(traj_quaternion(idx_task,4:7)),traj_quaternion(idx_task,1:3));
-    pathtform(:,:,idx_task) = cal_tform.tform;
+% (2) 등간격 호 길이 s_new에서 보간
+x_new = interp1(s, pts(:,1), s_new, 'pchip');
+y_new = interp1(s, pts(:,2), s_new, 'pchip');
+z_new = interp1(s, pts(:,3), s_new, 'pchip');
+
+% 쿼터니언 성분별 보간 후 정규화
+q_new = zeros(numel(s_new),4);
+for k = 1:4
+    q_new(:,k) = interp1(s,quat_orig(:,k),s_new,'pchip');
 end
 
+% 정규화(normalize) - 보간 뒤 길이가 1이 되도록
+q_new = q_new ./ vecnorm(q_new,2,2);
 
-%% 8) Joint-Space 경로 생성 (역기구학 계산)
+% (3) 보간한 위치 및 자세를 이용해 Task-space 변환행렬 생성
+numNew = numel(s_new);
+pathtform_new = zeros(4,4,numNew);
+
+for i = 1:numNew
+    R = quat2rotm(q_new(i,:));
+    t = [x_new(i);y_new(i);z_new(i)];
+    pathtform_new(:,:,i) = [R, t; 0 0 0 1];
+end
+
+%% 8) Joint-space 경로 생성 (역기구학)
 q_prev = q0;
-
-numPaths = size(pathtform,3);
-jointPath = zeros(numPaths,numel(q_prev));
-
-for idx_joint = 1:numPaths
-
-    tform = pathtform(:,:,idx_joint);
-    [config,~] = ik(endEffector, tform, weight, q_prev);
-
+jointPath = zeros(numNew, numel(q0));
+for i = 1:numNew
+    tgt = pathtform_new(:,:,i);
+    [config, ~] = ik(endEffector,tgt,weight,q_prev);
     q_prev = config;
+    jp = [config.JointPosition];
 
-    joint_positions = [config.JointPosition];
-    for j = 1:numel(joint_positions)
-        joint_positions(j) = max(min(joint_positions(j), joint_limits(j,2)), joint_limits(j,1));
+    % joint limit 클램핑
+    for j = 1:numel(jp)
+        jp(j) = max(min(jp(j), joint_limits(j,2)), joint_limits(j,1));
     end
-
-    jointPath(idx_joint,:) = joint_positions;
+    jointPath(i,:) = jp;
 end
 
-
-%% 9) Result Plot
-joint_vel = diff(rad2deg(jointPath)) * ctrl_freq;
-joint_acc = diff(joint_vel) * ctrl_freq;
-joint_jerk = diff(joint_acc) * ctrl_freq;
-
-figure;
-for i = 1:6
-    subplot(2,3,i);
-    plot(joint_vel(:,i));
-    title(sprintf('Joint %d',i));
-end
-
-figure;
-for i = 1:6
-    subplot(2,3,i);
-    plot(joint_acc(:,i));
-    title(sprintf('Joint %d',i));
-end
-
-figure;
-for i = 1:6
-    subplot(2,3,i);
-    plot(joint_jerk(:,i));
-    title(sprintf('Joint %d',i));
-end
-
-%% 10) Simulation
-
-Simulation_steps = size(jointPath,1);
-
-t_start_total = tic;
+%% 9) Simulation
 % figure;
-ax = show(robot,q0,'PreservePlot',false);
-hold on;
-grid on;
-
-for i = 1:Simulation_steps
+ax = show(robot, q0, 'PreservePlot', false);
+hold on; grid on;
+for i = 1:numNew
     for j = 1:numel(q0)
         q0(j).JointPosition = jointPath(i,j);
     end
-
-    show(robot,q0,'PreservePlot',false,'Parent',ax);
-
+    show(robot, q0, 'PreservePlot', false, 'Parent', ax);
     drawnow limitrate;
 end
-
-toc(t_start_total);
