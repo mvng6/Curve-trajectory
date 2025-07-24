@@ -8,9 +8,6 @@ Initialization;
 Figure_setup;
 
 %% 1) URDF 파일 불러오기
-% urdfFilePath = 'm1509.urdf';
-% robot = importrobot(urdfFilePath);
-
 meshFolder = 'D:\업무\1.과제\1.금형폴리싱\1.코드\3차년도\1. Matlab\8. Curve Traj\Robot\m1509';
 robot = importrobot('m1509.urdf', 'MeshPath', {meshFolder});
 
@@ -39,6 +36,8 @@ ctrl_freq = 1000;
 %% 3) 곡면 시편 Raw 경로 데이터 불러오기
 data = readmatrix('252waypoint.txt');
 
+data = flipud(data);
+
 %% 4) X,Y,Z 좌표 offset
 data(:,1) = data(:,1) - data(1,1) - 100;
 data(:,2) = data(:,2) - data(1,2) + 340;
@@ -63,8 +62,8 @@ d = sqrt(sum(diff(traj_cartesian(:,1:3)).^2,2));
 s = [0; cumsum(d)];
 
 %% 6) 원하는 이동 속도에 대한 시간 정하기
-v_des   = 0.1;              % [m/s]
-dt      = 0.001;            % 1kHz 제어 간격
+v_des   = 0.01;              % [m/s]
+dt      = 0.1;            % 1kHz 제어 간격
 L       = s(end);           % 경로 전체 길이
 T       = L/v_des;          % 전체 이동 소요 시간
 t_new   = (0:dt:T)';        % 0초에서 T 초까지 1ms(dt) 간격
@@ -107,6 +106,13 @@ jointPath = zeros(numNew, numel(q0));
 for i = 1:numNew
     tgt = pathtform_new(:,:,i);
     [config, ~] = ik(endEffector,tgt,weight,q_prev);
+
+    % 현재 관절 구성(config)으로 기구학적 자코비안 행렬 계산
+    J = geometricJacobian(robot, config, endEffector);
+
+    % 조작성 지수 계산 및 저장 (det(J*J')의 제곱근)
+    manipulability(i) = sqrt(det(J*J'));
+
     q_prev = config;
     jp = [config.JointPosition];
 
@@ -128,3 +134,32 @@ for i = 1:numNew
     show(robot, q0, 'PreservePlot', false, 'Parent', ax);
     drawnow limitrate;
 end
+
+%%
+figure;
+for i = 1:6
+    subplot(2,3,i);
+    plot(jointPath(:,i));
+
+    title(sprintf('Joint%d',i));
+end
+
+% 조작성 지수 그래프 추가
+figure;
+plot(t_new, manipulability);
+title('Manipulability Index');
+xlabel('Time (s)');
+ylabel('Manipulability');
+grid on;
+
+% (심화) 특정 관절과 조작성 지수 함께 보기
+figure;
+yyaxis left; % 왼쪽 y축 사용
+plot(t_new, jointPath(:,5)); % 예시: Joint 5
+ylabel('Joint 5 Angle (rad)');
+yyaxis right; % 오른쪽 y축 사용
+plot(t_new, manipulability);
+ylabel('Manipulability');
+title('Joint 5 Angle vs. Manipulability');
+xlabel('Time (s)');
+grid on;
