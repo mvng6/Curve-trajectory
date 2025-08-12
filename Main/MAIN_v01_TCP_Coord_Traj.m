@@ -20,48 +20,55 @@ Figure_setup;
 
 %% 1. 곡면 초기 경로 파일 불러오기
 % 1. 파일 열기
-fileName = 'sorted_faces_by_y.txt';
-fileID = fopen(fileName, 'r');
-
-% 파일 열기 실패 시 오류 메시지 출력
-if fileID == -1
-    error('파일을 열 수 없습니다: %s', fileName);
-end
-
-% 2. textscan을 위한 포맷 지정
-%   %*s : 문자열을 읽지만 무시
-%   %*d : 정수를 읽지만 무시
-%   %f  : 부동소수점 숫자를 읽어서 저장
-formatSpec = '%*s %*s %*s %*d %*s %*s <Vector (%f, %f, %f)>, %*s %*s <Vector (%f, %f, %f)>';
-
-% 3. textscan으로 파일 전체 데이터 읽기
-dataArray = textscan(fileID, formatSpec);
-
-% 4. 파일 닫기
-fclose(fileID);
-
-% 5. 읽어온 데이터를 n x 6 행렬로 결합
-%   dataArray는 1x6 셀 배열이며, 각 셀에는 n x 1 벡터가 들어있음
-pre_resultTraj = [dataArray{1} dataArray{2} dataArray{3} dataArray{4} dataArray{5} dataArray{6}];
+dataTable = readtable('indexed_path_data_Y_axis.csv');
+sortedTable = sortrows(dataTable, 'Y');
 
 %% 2. 경로 진행 방향 수정
-%   - 현재 y축을 따라 구동하는 형태
-%   - x축을 따라 구동하는 형태로 경로 수정
+pre_data = table2array(sortedTable);
 
-resultTraj = [pre_resultTraj(:,2), pre_resultTraj(:,1), pre_resultTraj(:,3), ...
-              pre_resultTraj(:,5), pre_resultTraj(:,4), pre_resultTraj(:,6)];
+data = [pre_data(:,2),pre_data(:,3),pre_data(:,4),pre_data(:,5),pre_data(:,6),pre_data(:,7)];
+pre_resultTraj = [];
+for i = 1:length(data)
+    if (data(i,3) ~= 0)
+        pre_resultTraj = [pre_resultTraj; data(i,:)];
+    end    
+end
+
+%% 3. 벡터가 겹치는 부분 제거
+resultTraj = [];
+for i = 1:length(pre_resultTraj)
+    if (mod(i,2) == 0)
+        resultTraj = [resultTraj; pre_resultTraj(i,:)];
+    end    
+end
 
 %% 3. CSV 파일로 저장
-% 1. CSV 파일의 각 열에 사용할 헤더(Header)를 정의합니다.
-header = {'X', 'Y', 'Z', 'Nx', 'Ny', 'Nz'};
+% 1. 파일 이름 지정
+fileName = 'transformed_data.csv';
 
-% 2. 숫자 행렬(Matrix)을 테이블(Table) 데이터 형식으로 변환합니다.
-%    이때 'VariableNames' 옵션으로 헤더를 지정해줍니다.
+% --- 핵심 로직 ---
+% data_cd 변수가 존재하는지 확인합니다.
+if ~exist('data_cd', 'var')
+    error('오류: "data_cd" 변수가 작업 공간에 정의되어 있지 않습니다. 경로를 먼저 지정해주세요.');
+end
+
+% 2. data_cd에 지정된 폴더가 실제로 존재하는지 확인하고, 없으면 생성
+if ~exist(data_cd, 'dir')
+   mkdir(data_cd);
+   fprintf('지정된 경로에 폴더가 없어 새로 생성했습니다:\n%s\n', data_cd);
+end
+
+% 3. fullfile 함수로 전체 파일 경로 생성
+%    폴더 경로를 담고 있는 'data_cd' 변수와 파일 이름을 합쳐줍니다.
+fullPath = fullfile(data_cd, fileName);
+
+
+% --- 데이터 준비 ---
+header = {'X', 'Y', 'Z', 'Nx', 'Ny', 'Nz'};
 dataTable = array2table(resultTraj, 'VariableNames', header);
 
-% 3. 생성된 테이블을 CSV 파일로 저장합니다.
-fileName = 'transformed_data.csv';
-writetable(dataTable, fileName);
+% 4. 생성된 전체 경로를 사용하여 테이블을 CSV 파일로 저장
+writetable(dataTable, fullPath);
 
-% 4. 작업 완료 확인 메시지를 출력합니다.
-fprintf('"%s" 파일이 현재 MATLAB 작업 폴더에 성공적으로 저장되었습니다.\n', fileName);
+% 5. 작업 완료 확인 메시지 출력
+fprintf('파일이 다음 경로에 성공적으로 저장되었습니다:\n%s\n', fullPath);
