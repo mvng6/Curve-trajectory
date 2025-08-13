@@ -140,12 +140,33 @@ fprintf('==> 보간된 경로 데이터의 각속도 계산 완료\n\n');
 % =========================================================================
 disp('5. 원하는 이동 거리에 대한 인덱스를 추출합니다...');
 
-[~, index] = min(abs(interp_dist_mm - desiredLength_mm));
+% (1) 입력된 시작 위치와 가장 가까운 점의 인덱스를 보간된 경로 데이터에서 찾기
+start_position_mm = interp_position_spline(10000,:);
+distances_from_start = vecnorm(interp_position_spline - start_position_mm, 2, 2);
+[~, start_index] = min(distances_from_start);
 
-% 결과 출력
-fprintf('==> 원하는 길이 %.3f에 가장 가까운 데이터의 인덱스는 %d 입니다.\n', desiredLength_mm, index);
-fprintf('==> 원하는 길이까지의 총 이동 소요 시간은 %.2f초 입니다.\n',interp_time_s(index));
-fprintf('==> 해당 위치의 좌표: [%.3f, %.3f, %.3f]\n', interp_position_spline(index, 1), interp_position_spline(index, 2), interp_position_spline(index, 3));
+% (2) 시작 인덱스에 해당하는 누적거리 찾기
+start_dist_mm = interp_dist_mm(start_index);
+
+% (3) 최종 목표 누적 거리 계산
+target_dist_mm = start_dist_mm + desiredLength_mm;
+
+% (4) 목표 누적 거리에 가장 가까운 점의 인덱스 찾기
+[~, final_index] = min(abs(interp_dist_mm - target_dist_mm));
+
+% --- 경로 끝을 초과하는 경우에 대한 경계 처리 ---
+if final_index >= length(interp_dist_mm)
+    warning('경로의 끝을 초과했습니다. 마지막 지점을 선택합니다.');
+    final_index = length(interp_dist_mm);
+end
+
+% --- 결과 출력 ---
+fprintf('==> 입력된 시작 좌표: [%.3f, %.3f, %.3f]\n', start_position_mm(1), start_position_mm(2), start_position_mm(3));
+fprintf('==> 경로상 가장 가까운 시작점: [%.3f, %.3f, %.3f] (인덱스: %d)\n', interp_position_spline(start_index, 1), interp_position_spline(start_index, 2), interp_position_spline(start_index, 3), start_index);
+fprintf('==> 원하는 로봇 이동 거리: %.3f mm\n', desiredLength_mm);
+fprintf('==> 최종 목표 지점의 인덱스는 %d 입니다.\n', final_index);
+fprintf('==> 시작점부터 목표점까지의 이동 소요 시간은 %.3f초 입니다.\n', interp_time_s(final_index) - interp_time_s(start_index));
+fprintf('==> 목표 위치의 좌표: [%.3f, %.3f, %.3f]\n', interp_position_spline(final_index, 1), interp_position_spline(final_index, 2), interp_position_spline(final_index, 3));
 
 %% ========================================================================
 % Result. 결과 시각화
@@ -153,11 +174,15 @@ fprintf('==> 해당 위치의 좌표: [%.3f, %.3f, %.3f]\n', interp_position_spl
 figure;
 plot(interp_time_s, omega_slerp, 'LineWidth', 1.5);
 
-% 그래프에 사각형 영역 생성
-y_limits = [0 5];
+% 그래프에 사각형 영역 생성 (시작점과 끝점을 반영)
+y_limits = ylim; % 현재 y축 범위 자동 감지
+if isempty(y_limits) || y_limits(2) < 5 % 데이터가 없을 경우 기본값 설정
+    y_limits = [0 5];
+end
+
 y_min = y_limits(1);
 y_max = y_limits(2);
-x_patch = [0, interp_time_s(index), interp_time_s(index), 0];
+x_patch = [interp_time_s(start_index), interp_time_s(final_index), interp_time_s(final_index), interp_time_s(start_index)];
 y_patch = [y_min, y_min, y_max, y_max];
 patch(x_patch, y_patch, 'g', 'FaceAlpha', 0.2, 'EdgeColor', 'none');
 
