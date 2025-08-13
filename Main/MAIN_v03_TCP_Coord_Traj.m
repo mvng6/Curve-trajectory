@@ -212,8 +212,8 @@ ax.YColor = 'r';
 % 그래프 요소 설정
 title('Robot TCP Velocity Profile');
 xlabel('Data Points (Time Steps)');
-legend('Linear Velocity (y)', 'Angular Velocity (wy)', 'Location', 'best');
-grid on;
+% legend('Linear Velocity (v_y)', 'Angular Velocity (w_y)', 'Location', 'best');
+legend('Linear Velocity ($v_y$)', 'Angular Velocity ($w_y$)', 'Interpreter', 'latex', 'Location', 'best');
 hold off;
 
 fprintf('==> 속도 경로 그래프 시각화 완료!\n\n');
