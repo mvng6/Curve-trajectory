@@ -3,7 +3,7 @@
 %   - 툴 좌표계 기준 로봇 구동을 진행 (각속도에 대한 부분만 변경하면 곡면 추종 가능)
 %   - 곡면에 대한 z방향 법선 벡터를 기준으로 각속도 경로 데이터를 추출
 %
-% == 전처리된 금형 데이터 리샘플링(1kHz) 및 각속도 계산
+% == 특정 이동 거리만큼 곡면 금형 구동 시 변곡점 부분까지 포함되는지 여부 확인용 코드
 % 
 %
 % 최종 수정: 2025-08-12
@@ -23,7 +23,8 @@ Figure_setup;
 % =========================================================================
 robot_speed_mmps = 5;       % 원하는 로봇 이동 속도 설정 [mm/s]
 control_freq_hz = 1000;     % 제어 주기 설정[Hz]
-desiredLength_mm = 40;      % 원하는 이동 거리 설정 [mm]
+start_idx_set = 1;
+desiredLength_mm = 150;      % 원하는 이동 거리 설정 [mm]
 
 %% ========================================================================
 % 1. 데이터 불러오기 및 변수 설정
@@ -141,7 +142,7 @@ fprintf('==> 보간된 경로 데이터의 각속도 계산 완료\n\n');
 disp('5. 원하는 이동 거리에 대한 인덱스를 추출합니다...');
 
 % (1) 입력된 시작 위치와 가장 가까운 점의 인덱스를 보간된 경로 데이터에서 찾기
-start_position_mm = interp_position_spline(10000,:);
+start_position_mm = interp_position_spline(start_idx_set,:);
 distances_from_start = vecnorm(interp_position_spline - start_position_mm, 2, 2);
 [~, start_index] = min(distances_from_start);
 
