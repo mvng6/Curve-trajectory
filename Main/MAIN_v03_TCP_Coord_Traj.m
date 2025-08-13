@@ -217,3 +217,6 @@ grid on;
 hold off;
 
 fprintf('==> 속도 경로 그래프 시각화 완료!\n\n');
+
+%% 속도 경로 데이터 저장
+writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile.txt'), 'Delimiter', '\t');
