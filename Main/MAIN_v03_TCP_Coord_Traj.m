@@ -68,7 +68,7 @@ fprintf('==> 첫 번째 경로 생성 완료! (직선구간 +y)\n');
 % 곡선 구간
 % 두 번째 경로 지점 생성
 start_position = traj_pos_profile(end,:);
-direction = [0, 0, 0, 0, -1, 0];
+direction = [0, 0, 0, 0, 1, 0];
 offset = straight_move_len_mm;
 home_flag = 0;
 [curve_pos_traj, curve_vel_traj] = fun_generate_curve_traj(start_position, ...
@@ -100,7 +100,7 @@ fprintf('==> 세 번째 경로 생성 완료! (직선구간 -y)\n');
 % 곡선 구간
 % 네 번째 경로 지점 생성
 start_position = traj_pos_profile(end,:);
-direction = [0, 0, 0, 0, -1, 0];
+direction = [0, 0, 0, 0, 1, 0];
 offset = 0;
 home_flag = 0;
 [curve_pos_traj, curve_vel_traj] = fun_generate_curve_traj(start_position, ...
@@ -132,7 +132,7 @@ fprintf('==> 다섯 번째 경로 생성 완료! (직선구간 +y)\n');
 % 곡선 구간
 % 여섯 번째 경로 지점 생성
 start_position = traj_pos_profile(end,:);
-direction = [0, 0, 0, 0, -1, 0];
+direction = [0, 0, 0, 0, 1, 0];
 offset = 30;
 home_flag = 0;
 [curve_pos_traj, curve_vel_traj] = fun_generate_curve_traj(start_position, ...
@@ -164,7 +164,7 @@ fprintf('==> 일곱 번째 경로 생성 완료! (직선구간 -y)\n');
 % 곡선 구간 (초기 위치로 이동)
 % 여덟 번째 경로 지점 생성
 start_position = traj_pos_profile(end,:);
-direction = [0, 0, 0, 0, 1, 0];
+direction = [0, 0, 0, 0, -1, 0];
 offset = 0;
 home_flag = 1;
 [curve_pos_traj, curve_vel_traj] = fun_generate_curve_traj(start_position, ...
