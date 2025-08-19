@@ -247,7 +247,7 @@ writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile.txt'
 % 바이너리 파일로 저장
 disp('6. 생성된 위치 경로를 바이너리 파일로 저장합니다...');
 try
-    pos_binary_file = fullfile(data_cd, 'Robot_TCP_Position_profile_binary.bin');
+    pos_binary_file = fullfile(data_cd, 'Robot_TCP_Position_profile.bin');
     fileID_pos = fopen(pos_binary_file, 'w');
     if fileID_pos == -1, error('위치 프로파일 파일을 열 수 없습니다.'); end
     
