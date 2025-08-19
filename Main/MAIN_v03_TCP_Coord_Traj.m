@@ -230,7 +230,7 @@ try
     fileID_vel = fopen(vel_binary_file, 'w');
     if fileID_vel == -1, error('속도 프로파일 파일을 열 수 없습니다.'); end
     
-    fwrite(fileID_vel, traj_vel_profile', 'double'); % 데이터 전치하여 저장
+    fwrite(fileID_vel, traj_vel_profile', 'single'); % 데이터 전치하여 저장
     fclose(fileID_vel);
     
     fprintf('==> 속도 경로 바이너리 파일 저장 완료!\n   - 파일 위치: %s\n', vel_binary_file);
@@ -251,7 +251,7 @@ try
     fileID_pos = fopen(pos_binary_file, 'w');
     if fileID_pos == -1, error('위치 프로파일 파일을 열 수 없습니다.'); end
     
-    fwrite(fileID_pos, traj_pos_profile', 'double'); % 데이터 전치하여 저장
+    fwrite(fileID_pos, traj_pos_profile', 'single'); % 데이터 전치하여 저장
     fclose(fileID_pos);
     
     fprintf('==> 위치 경로 바이너리 파일 저장 완료!\n   - 파일 위치: %s\n', pos_binary_file);
