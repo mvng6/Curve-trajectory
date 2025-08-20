@@ -18,14 +18,14 @@ traj = pre_traj(idx_sort,:);
 % y축 위치 좌표를 이용해서 제거
 new_traj = [];
 for i = 1:length(traj(:,3))
-    if mod(i,2) == 1
+    if mod(i,2) == 0
         new_traj = [new_traj; traj(i,2:7)];
     end
 end
 
 %% 시각화를 통한 확인
 figure;
-plot(new_traj(:,2))
+plot(new_traj(:,3))
 
 %% 데이터 저장
 % 1. fullfile 함수를 이용해 전체 파일 경로를 안전하게 생성합니다.
