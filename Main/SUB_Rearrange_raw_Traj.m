@@ -26,3 +26,12 @@ end
 %% 시각화를 통한 확인
 figure;
 plot(new_traj(:,2))
+
+%% 데이터 저장
+% 1. fullfile 함수를 이용해 전체 파일 경로를 안전하게 생성합니다.
+full_path = fullfile(data_cd, 'test_curve_traj.csv');
+
+% 2. writematrix 함수로 행렬 데이터를 지정된 경로에 CSV 파일로 저장합니다.
+writematrix(new_traj, full_path);
+
+disp('test_curve_traj.csv 파일 저장이 완료되었습니다.');
