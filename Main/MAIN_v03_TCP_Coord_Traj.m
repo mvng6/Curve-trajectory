@@ -17,8 +17,8 @@ Initialization;
 Figure_setup;
 
 %% 0. 경로 생성을 위한 조건 설정
-robot_speed = 5;
-control_freq_hz = 1000;
+robot_speed = 10;
+control_freq_hz = 10;
 straight_move_len_mm = 30;
 curve_move_len_mm = 50;
 

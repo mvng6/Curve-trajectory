@@ -24,6 +24,9 @@ function [interp_time_s, interp_position_spline, interp_normals_slerp, interp_di
     %   - 곡면 구동 시 x축을 기준으로 이동하기 위해
     positions_mm = [pre_positions_mm(:,2), pre_positions_mm(:,1), pre_positions_mm(:,3)];
     normals = [pre_normals(:,2), pre_normals(:,1), pre_normals(:,3)];
+    
+    % 테스트 (법선 벡터 반대로)
+    normals = -normals;
 
     %% 경로 데이터 리샘플링
     % (1) 경로 전체 길이 및 이동 소요 시간 계산
