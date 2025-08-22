@@ -31,10 +31,11 @@ path_2 = [arc_center(1) + arc_radius*cos(theta_vis);
 original_path = [path_1, path_2]';
 
 fprintf('총 %d개의 경로점으로 구성된 원본 경로 생성 완료.\n', size(original_path, 1));
+
 %%
 figure;
 grid on; axis equal; view(45, 25);
-plot3(original_path(1,:), original_path(2,:), original_path(3,:), 'k:', 'LineWidth', 1.5)
+plot3(original_path(:,1), original_path(:,2), original_path(:,3), 'k:', 'LineWidth', 1.5)
 rotate3d on;
 
 %%
