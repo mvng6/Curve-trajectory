@@ -221,42 +221,42 @@ fprintf('==> 속도 경로 그래프 시각화 완료!\n\n');
 %% 위치 및 속도 경로 데이터를 텍스트 및 바이너리 파일로 저장
 % --- 1. 속도 경로 데이터 저장 ---
 % txt 파일로 저장
-writematrix(traj_pos_profile, fullfile(data_cd, 'Robot_TCP_Pos_profile.txt'), 'Delimiter', '\t');
-
-% 바이너리 파일로 저장
-disp('5. 생성된 속도 경로를 바이너리 파일로 저장합니다...');
-try
-    vel_binary_file = fullfile(data_cd, 'Robot_TCP_Velocity_profile.bin');
-    fileID_vel = fopen(vel_binary_file, 'w');
-    if fileID_vel == -1, error('속도 프로파일 파일을 열 수 없습니다.'); end
-    
-    fwrite(fileID_vel, traj_vel_profile', 'single'); % 데이터 전치하여 저장
-    fclose(fileID_vel);
-    
-    fprintf('==> 속도 경로 바이너리 파일 저장 완료!\n   - 파일 위치: %s\n', vel_binary_file);
-catch ME
-    fprintf('==> 속도 바이너리 파일 저장 중 오류 발생:\n');
-    disp(ME.message);
-    if exist('fileID_vel', 'var') && fileID_vel ~= -1, fclose(fileID_vel); end
-end
-
-% --- 2. 위치 경로 데이터 저장 ---
-% txt 파일로 저장
-writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile.txt'), 'Delimiter', '\t');
-
-% 바이너리 파일로 저장
-disp('6. 생성된 위치 경로를 바이너리 파일로 저장합니다...');
-try
-    pos_binary_file = fullfile(data_cd, 'Robot_TCP_Position_profile.bin');
-    fileID_pos = fopen(pos_binary_file, 'w');
-    if fileID_pos == -1, error('위치 프로파일 파일을 열 수 없습니다.'); end
-    
-    fwrite(fileID_pos, traj_pos_profile', 'single'); % 데이터 전치하여 저장
-    fclose(fileID_pos);
-    
-    fprintf('==> 위치 경로 바이너리 파일 저장 완료!\n   - 파일 위치: %s\n', pos_binary_file);
-catch ME
-    fprintf('==> 위치 바이너리 파일 저장 중 오류 발생:\n');
-    disp(ME.message);
-    if exist('fileID_pos', 'var') && fileID_pos ~= -1, fclose(fileID_pos); end
-end
+% writematrix(traj_pos_profile, fullfile(data_cd, 'Robot_TCP_Pos_profile.txt'), 'Delimiter', '\t');
+% 
+% % 바이너리 파일로 저장
+% disp('5. 생성된 속도 경로를 바이너리 파일로 저장합니다...');
+% try
+%     vel_binary_file = fullfile(data_cd, 'Robot_TCP_Velocity_profile.bin');
+%     fileID_vel = fopen(vel_binary_file, 'w');
+%     if fileID_vel == -1, error('속도 프로파일 파일을 열 수 없습니다.'); end
+% 
+%     fwrite(fileID_vel, traj_vel_profile', 'single'); % 데이터 전치하여 저장
+%     fclose(fileID_vel);
+% 
+%     fprintf('==> 속도 경로 바이너리 파일 저장 완료!\n   - 파일 위치: %s\n', vel_binary_file);
+% catch ME
+%     fprintf('==> 속도 바이너리 파일 저장 중 오류 발생:\n');
+%     disp(ME.message);
+%     if exist('fileID_vel', 'var') && fileID_vel ~= -1, fclose(fileID_vel); end
+% end
+% 
+% % --- 2. 위치 경로 데이터 저장 ---
+% % txt 파일로 저장
+% writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile.txt'), 'Delimiter', '\t');
+% 
+% % 바이너리 파일로 저장
+% disp('6. 생성된 위치 경로를 바이너리 파일로 저장합니다...');
+% try
+%     pos_binary_file = fullfile(data_cd, 'Robot_TCP_Position_profile.bin');
+%     fileID_pos = fopen(pos_binary_file, 'w');
+%     if fileID_pos == -1, error('위치 프로파일 파일을 열 수 없습니다.'); end
+% 
+%     fwrite(fileID_pos, traj_pos_profile', 'single'); % 데이터 전치하여 저장
+%     fclose(fileID_pos);
+% 
+%     fprintf('==> 위치 경로 바이너리 파일 저장 완료!\n   - 파일 위치: %s\n', pos_binary_file);
+% catch ME
+%     fprintf('==> 위치 바이너리 파일 저장 중 오류 발생:\n');
+%     disp(ME.message);
+%     if exist('fileID_pos', 'var') && fileID_pos ~= -1, fclose(fileID_pos); end
+% end
