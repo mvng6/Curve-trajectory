@@ -110,11 +110,7 @@ legend('Original Traj','Resampled Traj',' Normals');
 view(3);
 disp('시각화 완료.');
 
-%% 5. 경로의 위치, 법선 및 접선 벡터 및 곡률반경 계산
-% 리샘플링된 경로의 P, N, T, kappa를 계산 (각속도 계산용)
-
-
-%% 6. TCP 좌표계 기준 속도 제어를 위한 각속도를 계산
+%% 5. TCP 좌표계 기준 속도 제어를 위한 각속도를 계산
 % vx값은 항상 고정
 fprintf('--- 최종 경로의 선속도와 각속도를 계산합니다 ---\n');
 
@@ -166,7 +162,7 @@ final_trajectory.omega_tool = rad2deg(final_trajectory.omega_tool);         % de
 
 fprintf('  -> 계산 완료.\n\n');
 
-%% 7. 경로 시각화
+%% 6. 경로 시각화
 fprintf('--- 시뮬레이션 완료. 결과를 그래프로 확인하세요 ---\n');
 figure('Name', '최종 경로 및 속도 프로파일', 'NumberTitle', 'off', 'Position', [100, 100, 1200, 800]);
 
@@ -202,7 +198,7 @@ xlabel('Time (s)'); ylabel('Angular vel. (deg/s)');
 legend('\omega_x', '\omega_y', '\omega_z', 'Location', 'northeastoutside');
 grid on;
 
-%% 8. 경로 데이터 저장
+%% 7. 경로 데이터 저장
 traj_pos_profile = [final_trajectory.position, final_trajectory.normal];
 traj_vel_profile = [final_trajectory.vel_tool, final_trajectory.omega_tool];
 
