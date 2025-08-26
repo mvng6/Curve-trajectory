@@ -10,8 +10,8 @@ clc;
 %% 1. 경로 파라미터 설정
 disp('1. 경로 생성을 위한 파라미터를 설정합니다...');
 
-path_length = 500.0;    % 경로의 총 길이 (X축 방향, mm)
-amplitude = 20.0;       % 언덕의 높이 (Z축 방향, mm). 이 값이 클수록 곡률이 커집니다.
+path_length = 300.0;    % 경로의 총 길이 (X축 방향, mm)
+amplitude = 30.0;       % 언덕의 높이 (Z축 방향, mm). 이 값이 클수록 곡률이 커집니다.
 num_points = 100;      % 경로를 구성할 원본 점의 개수
 
 fprintf('  - 경로 길이: %.1f mm\n', path_length);
@@ -57,16 +57,16 @@ fprintf('  -> 법선 벡터(N) 계산 및 정규화 완료.\n\n');
 
 %% 4. 생성된 경로 시각화
 disp('4. 생성된 경로와 법선 벡터를 시각화합니다...');
-figure('Name', '생성된 테스트 경로', 'NumberTitle', 'off');
+figure('Name', 'Test Trajectory', 'NumberTitle', 'off');
 hold on; grid on; axis equal;
-plot3(P(:,1), P(:,2), P(:,3), 'r-', 'LineWidth', 2, 'DisplayName', '생성된 경로');
+plot3(P(:,1), P(:,2), P(:,3), 'r-', 'LineWidth', 2, 'DisplayName', 'Generated Traj');
 
 % 법선 벡터를 50개 점마다 하나씩 표시 (너무 많으면 보이지 않음)
 quiver3(P(1:20:end,1), P(1:20:end,2), P(1:20:end,3), ...
         N(1:20:end,1), N(1:20:end,2), N(1:20:end,3), ...
-        15, 'b', 'DisplayName', '법선 벡터'); % 벡터 길이는 15mm로 표현
+        0.5, 'b', 'DisplayName', 'Normal vector'); % 벡터 길이는 0.5mm로 표현
 
-title(sprintf('테스트 경로 (Amplitude: %.1f mm)', amplitude));
+title(sprintf('Test Trajectory (Amplitude: %.1f mm)', amplitude));
 xlabel('X (mm)');
 ylabel('Y (mm)');
 zlabel('Z (mm)');
