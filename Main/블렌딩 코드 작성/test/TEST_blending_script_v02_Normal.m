@@ -56,8 +56,8 @@ vector_length = 1;   % 표시될 벡터(화살표)의 길이 (mm)
 figure('Name', '블렌딩 경로 및 법선 벡터 시각화', 'NumberTitle', 'off');
 hold on;
 grid on;
-axis equal;
-view(30, 45);
+% axis equal;
+% view(30, 45);
 
 % 1. 원본 경로 및 블렌딩된 경로 플로팅
 plot3(P(:,1), P(:,2), P(:,3), 'k:', 'LineWidth', 1.5, 'DisplayName', '원본 경로');
@@ -74,7 +74,7 @@ quiver3(blended_path(1:plot_interval:end, 1), ... % 벡터 시작점 X좌표
         vector_length, ... % 벡터 길이 스케일
         'b', 'LineWidth', 1, 'DisplayName', '블렌딩된 툴 방향');
 
-title('경로 블렌딩 및 보간된 법선 벡터');
+title('블렌딩 된 경로에서의 보간된 법선 벡터');
 xlabel('X (mm)');
 ylabel('Y (mm)');
 zlabel('Z (mm)');
