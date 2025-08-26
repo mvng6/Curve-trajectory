@@ -203,10 +203,6 @@ legend('\omega_x', '\omega_y', '\omega_z', 'Location', 'northeastoutside');
 grid on;
 
 %% 8. 경로 데이터 저장
-% Process_traj = [final_trajectory.position, final_trajectory.normal];
-% writematrix(Process_traj, fullfile(data_cd, 'Process_Curve_Plate_Traj.csv'), 'Delimiter', '\t');
-% disp('리샘플링 된 경로 저장 완료.');
-
 traj_pos_profile = [final_trajectory.position, final_trajectory.normal];
 traj_vel_profile = [final_trajectory.vel_tool, final_trajectory.omega_tool];
 
