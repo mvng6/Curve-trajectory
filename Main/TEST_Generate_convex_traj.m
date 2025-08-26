@@ -7,10 +7,13 @@ clear;
 close all;
 clc;
 
+Initialization;
+Figure_setup;
+
 %% 1. 경로 파라미터 설정
 disp('1. 경로 생성을 위한 파라미터를 설정합니다...');
 
-path_length = 300.0;    % 경로의 총 길이 (X축 방향, mm)
+path_length = 200.0;    % 경로의 총 길이 (X축 방향, mm)
 amplitude = 30.0;       % 언덕의 높이 (Z축 방향, mm). 이 값이 클수록 곡률이 커집니다.
 num_points = 100;      % 경로를 구성할 원본 점의 개수
 
@@ -77,13 +80,13 @@ disp('  -> 시각화 완료.');
 
 %% 5. CSV 파일로 저장
 disp('5. 경로 데이터를 CSV 파일로 저장합니다...');
-output_filename = 'test_curve_traj.csv';
+output_filename = 'test_convex_traj.csv';
 
 % 위치(P)와 법선 벡터(N) 데이터를 하나의 행렬로 결합
 output_data = [P, N];
 
 % CSV 파일로 저장
-writematrix(output_data, output_filename);
+writematrix(output_data, fullfile(data_cd, output_filename));
 
 fprintf('\n==> 성공: 경로 데이터가 ''%s'' 파일로 저장되었습니다.\n', output_filename);
 fprintf('    이제 MAIN_Curve_Path_Blending.m 스크립트를 실행하여 테스트할 수 있습니다.\n');

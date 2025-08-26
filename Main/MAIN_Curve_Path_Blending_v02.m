@@ -16,18 +16,28 @@ Figure_setup;
 %% 1. 구동할 경로를 생성
 disp('1. CSV 파일에서 경로 데이터를 로딩합니다...');
 try
-    % data = readmatrix('test_curve_plate_traj.csv');
-    data = readmatrix('test_curve_traj.csv');
-    P = data(:,1:3); % 위치 데이터 (N x 3)
-    N = data(:,4:6); % 법선 벡터 데이터 (N x 3)
+    data = readmatrix('test_curve_plate_traj.csv');
+    % data = readmatrix('test_convex_traj.csv');
+    % data = readmatrix('test_concave_traj.csv');
+    
+    init_P = data(:,1:3); % 위치 데이터 (N x 3)
+    init_N = data(:,4:6); % 법선 벡터 데이터 (N x 3)
     
     % 법선 벡터가 단위 벡터가 아닐 수 있으므로 정규화를 수행합니다. (안전 장치)
-    N = N ./ vecnorm(N, 2, 2);
+    init_N = init_N ./ vecnorm(init_N, 2, 2);
     
-    fprintf('성공: %d개의 포인트 데이터를 로드했습니다.\n\n', size(P, 1));
+    fprintf('성공: %d개의 포인트 데이터를 로드했습니다.\n\n', size(init_P, 1));
 catch ME
     error('오류: test_curve_traj.csv 파일을 찾을 수 없거나 읽을 수 없습니다. 파일 경로를 확인해주세요.\n오류 메시지: %s', ME.message);
 end
+
+P(:,1) = init_P(:,2);
+P(:,2) = init_P(:,1);
+P(:,3) = init_P(:,3);
+
+N(:,1) = init_N(:,2);
+N(:,2) = init_N(:,1);
+N(:,3) = init_N(:,3);
 
 %% 2. 원본 경로에서의 미세한 노이즈 제거
 original_data = [P, N];
@@ -47,6 +57,8 @@ figure('Name', '스무딩 결과 비교', 'NumberTitle', 'off');
 hold on; grid on; axis equal;
 plot3(original_data(:,1), original_data(:,2), original_data(:,3), 'Color', [0.5 0.5 0.8], 'DisplayName', '원본 경로');
 plot3(smoothed_data(:,1), smoothed_data(:,2), smoothed_data(:,3), 'r-', 'LineWidth', 2, 'DisplayName', '스무딩된 경로');
+scatter3(smoothed_data(1,1),smoothed_data(1,2),smoothed_data(1,3),50,'green','filled','DisplayName','Start Point');
+scatter3(smoothed_data(end,1),smoothed_data(end,2),smoothed_data(end,3),50,'black','filled','DisplayName','End Point');
 title('원본 경로 vs. 스무딩된 경로');
 xlabel('X (mm)'); ylabel('Y (mm)'); zlabel('Z (mm)');
 legend; view(3);
@@ -97,16 +109,18 @@ figure('Name', 'Resampling of Trajectory Result', 'NumberTitle', 'off');
 title('Resampling of Trajectory Result');
 hold on; grid on; axis equal;
 plot3(new_P(:,1), new_P(:,2), new_P(:,3), 'k--','DisplayName','Original Traj');
-
 n_points = length(points);
 step = floor(n_points / 5000);
 plot3(points(:,1), points(:,2), points(:,3), 'ro-', 'LineWidth', 1.5, 'DisplayName', 'Resampled Traj');
 quiver3(points(:,1), points(:,2), points(:,3), ...
     normals(:,1)*10, normals(:,2)*10, normals(:,3)*10, ...
     'k','LineWidth',1,'DisplayName','Normal Vector');
+scatter3(new_P(1,1),new_P(1,2),new_P(1,3),100,'green','filled','DisplayName','Start Point');
+scatter3(new_P(end,1),new_P(end,2),new_P(end,3),100,'black','filled','DisplayName','End Point');
 title(sprintf('Speed = %d mm/s (Point %d)', speed, size(points,1)));
 xlabel('X (mm)'); ylabel('Y (mm)'); zlabel('Z (mm)');
-legend('Original Traj','Resampled Traj',' Normals');
+% legend('Original Traj','Resampled Traj',' Normals');
+legend();
 view(3);
 disp('시각화 완료.');
 
@@ -174,6 +188,8 @@ plot3(final_trajectory.position(:,1), final_trajectory.position(:,2), final_traj
 quiver3(final_trajectory.position(1:20:end,1), final_trajectory.position(1:20:end,2), final_trajectory.position(1:20:end,3), ...
         -final_trajectory.normal(1:20:end,1), -final_trajectory.normal(1:20:end,2), -final_trajectory.normal(1:20:end,3), ...
         5, 'b', 'DisplayName', 'TCP direction');
+scatter3(final_trajectory.position(1,1),final_trajectory.position(1,2),final_trajectory.position(1,3),50,'green','filled','DisplayName','Start Point');
+scatter3(final_trajectory.position(end,1),final_trajectory.position(end,2),final_trajectory.position(end,3),50,'black','filled','DisplayName','End Point');
 title('3D Trajectory of Curve Plate');
 xlabel('X (mm)'); ylabel('Y (mm)'); zlabel('Z (mm)');
 legend('Location','northeastoutside');
@@ -202,12 +218,16 @@ grid on;
 traj_pos_profile = [final_trajectory.position, final_trajectory.normal];
 traj_vel_profile = [final_trajectory.vel_tool, final_trajectory.omega_tool];
 
-writematrix(traj_pos_profile, fullfile(data_cd, 'Robot_TCP_Pos_profile_test.txt'), 'Delimiter', '\t');
-writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile_test.txt'), 'Delimiter', '\t');
+writematrix(traj_pos_profile, fullfile(data_cd, 'Robot_TCP_Pos_profile_test_curve.txt'), 'Delimiter', '\t');
+writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_curve.txt'), 'Delimiter', '\t');
+
+% writematrix(traj_pos_profile, fullfile(data_cd, 'Robot_TCP_Pos_profile_test_concave.txt'), 'Delimiter', '\t');
+% writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_concave.txt'), 'Delimiter', '\t');
 
 disp('5. 생성된 속도 경로를 바이너리 파일로 저장합니다...');
 try
-    vel_binary_file = fullfile(data_cd, 'Robot_TCP_Velocity_profile_test.bin');
+    vel_binary_file = fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_curve.bin');
+    % vel_binary_file = fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_concave.bin');
     fileID_vel = fopen(vel_binary_file, 'w');
     if fileID_vel == -1, error('속도 프로파일 파일을 열 수 없습니다.'); end
 
