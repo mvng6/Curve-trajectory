@@ -6,11 +6,14 @@ clear;
 close all;
 clc;
 
+Initialization;
+Figure_setup;
+
 %% 1. 리샘플링된 경로 데이터 로딩
 disp('1. 리샘플링된 경로 파일(Process_Curve_Plate_Traj.csv)을 로딩합니다...');
 try
     % MAIN_Curve_Path_Blending.m 에서 저장한 파일을 읽어옵니다.
-    data = readmatrix('Process_Curve_Plate_Traj.csv');
+    data = readmatrix('test_concave_traj.csv');
     points = data(:, 1:3); % 위치 데이터
     dt = 0.001; % MAIN 스크립트에서 설정한 resampling_time_step 값
     
@@ -82,10 +85,10 @@ close all;
 clc;
 
 %% 1. 리샘플링된 경로 데이터 로딩
-disp('1. 리샘플링된 경로 파일(Process_Curve_Plate_Traj.csv)을 로딩합니다...');
+disp('1. 리샘플링된 경로 파일(test_concave_traj.csv)을 로딩합니다...');
 try
     % MAIN_Curve_Path_Blending.m 에서 저장한 파일을 읽어옵니다.
-    data = readmatrix('Process_Curve_Plate_Traj.csv');
+    data = readmatrix('test_concave_traj.csv');
     points = data(:, 1:3); % 위치 데이터
     dt = 0.001; % MAIN 스크립트에서 설정한 resampling_time_step 값
     
@@ -132,18 +135,19 @@ figure('Name', '경로 곡률 분석', 'NumberTitle', 'off', 'Position', [100, 1
 % 1. 곡률 그래프
 subplot(2, 1, 1);
 plot(time_axis, curvature, 'b-');
-title('경로의 곡률(Curvature) 변화');
-xlabel('시간 (s)');
-ylabel('곡률 (1/mm)');
+ylim([0 0.05]);
+title('Change in Path Curvature');
+xlabel('Time (s)');
+ylabel('Curvature (1/mm)');
 grid on;
 xlim([0 time_axis(end)]);
 
 % 2. 곡률반경 그래프
 subplot(2, 1, 2);
 plot(time_axis, radius_of_curvature, 'r-');
-title('경로의 곡률반경(Radius of Curvature) 변화');
-xlabel('시간 (s)');
-ylabel('곡률반경 (mm)');
+title('Change in Path Radius of Curvature');
+xlabel('Time (s)');
+ylabel('Radius of Curvature (mm)');
 grid on;
 xlim([0 time_axis(end)]);
 ylim([0 max_radius_for_plot]); % Y축 범위 제한

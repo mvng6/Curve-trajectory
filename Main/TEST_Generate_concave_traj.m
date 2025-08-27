@@ -65,28 +65,29 @@ hold on; grid on; axis equal;
 plot3(P(:,1), P(:,2), P(:,3), 'r-', 'LineWidth', 2, 'DisplayName', 'Generated Traj');
 
 % 법선 벡터를 20개 점마다 하나씩 표시 (너무 많으면 보이지 않음)
-quiver3(P(1:20:end,1), P(1:20:end,2), P(1:20:end,3), ...
-        N(1:20:end,1), N(1:20:end,2), N(1:20:end,3), ...
-        15, 'b', 'DisplayName', 'Normal vector'); % 벡터 길이는 15mm로 표현 (가시성 확보)
+idx_plot = 1;
+quiver3(P(1:idx_plot:end,1), P(1:idx_plot:end,2), P(1:idx_plot:end,3), ...
+        N(1:idx_plot:end,1), N(1:idx_plot:end,2), N(1:idx_plot:end,3), ...
+        0.5, 'b', 'DisplayName', 'Normal vector'); % 벡터 길이는 15mm로 표현 (가시성 확보)
 
 title(sprintf('Concave Test Trajectory (Amplitude: %.1f mm)', amplitude));
 xlabel('X (mm)');
 ylabel('Y (mm)');
 zlabel('Z (mm)');
-legend;
+% legend;
 view(30, 20); % 3D 뷰 각도 조절
 disp('  -> 시각화 완료.');
 
 
 %% 5. CSV 파일로 저장
-disp('5. 경로 데이터를 CSV 파일로 저장합니다...');
-output_filename = 'test_concave_traj.csv';
-
-% 위치(P)와 법선 벡터(N) 데이터를 하나의 행렬로 결합
-output_data = [P, N];
-
-% CSV 파일로 저장
-writematrix(output_data, fullfile(data_cd, output_filename));
-
-fprintf('\n==> 성공: 경로 데이터가 ''%s'' 파일로 저장되었습니다.\n', output_filename);
-fprintf('    이제 MAIN_Curve_Path_Blending.m 스크립트를 실행하여 테스트할 수 있습니다.\n');
+% disp('5. 경로 데이터를 CSV 파일로 저장합니다...');
+% output_filename = 'test_concave_traj.csv';
+% 
+% % 위치(P)와 법선 벡터(N) 데이터를 하나의 행렬로 결합
+% output_data = [P, N];
+% 
+% % CSV 파일로 저장
+% writematrix(output_data, fullfile(data_cd, output_filename));
+% 
+% fprintf('\n==> 성공: 경로 데이터가 ''%s'' 파일로 저장되었습니다.\n', output_filename);
+% fprintf('    이제 MAIN_Curve_Path_Blending.m 스크립트를 실행하여 테스트할 수 있습니다.\n');

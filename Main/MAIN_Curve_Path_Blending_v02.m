@@ -55,11 +55,11 @@ fprintf('  -> 스무딩 완료.\n');
 % 시각화
 figure('Name', '스무딩 결과 비교', 'NumberTitle', 'off');
 hold on; grid on; axis equal;
-plot3(original_data(:,1), original_data(:,2), original_data(:,3), 'Color', [0.5 0.5 0.8], 'DisplayName', '원본 경로');
-plot3(smoothed_data(:,1), smoothed_data(:,2), smoothed_data(:,3), 'r-', 'LineWidth', 2, 'DisplayName', '스무딩된 경로');
+plot3(original_data(:,1), original_data(:,2), original_data(:,3), 'Color', [0.5 0.5 0.8], 'DisplayName', 'Original Traj');
+plot3(smoothed_data(:,1), smoothed_data(:,2), smoothed_data(:,3), 'r-', 'LineWidth', 2, 'DisplayName', 'Smoothed Traj');
 scatter3(smoothed_data(1,1),smoothed_data(1,2),smoothed_data(1,3),50,'green','filled','DisplayName','Start Point');
 scatter3(smoothed_data(end,1),smoothed_data(end,2),smoothed_data(end,3),50,'black','filled','DisplayName','End Point');
-title('원본 경로 vs. 스무딩된 경로');
+title('Original Traj vs. Smoothed Traj');
 xlabel('X (mm)'); ylabel('Y (mm)'); zlabel('Z (mm)');
 legend; view(3);
 fprintf('  -> 스무딩 한 경로 시각화 완료.\n\n');
@@ -215,28 +215,28 @@ legend('\omega_x', '\omega_y', '\omega_z', 'Location', 'northeastoutside');
 grid on;
 
 %% 7. 경로 데이터 저장
-traj_pos_profile = [final_trajectory.position, final_trajectory.normal];
-traj_vel_profile = [final_trajectory.vel_tool, final_trajectory.omega_tool];
-
-writematrix(traj_pos_profile, fullfile(data_cd, 'Robot_TCP_Pos_profile_test_curve.txt'), 'Delimiter', '\t');
-writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_curve.txt'), 'Delimiter', '\t');
-
-% writematrix(traj_pos_profile, fullfile(data_cd, 'Robot_TCP_Pos_profile_test_concave.txt'), 'Delimiter', '\t');
-% writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_concave.txt'), 'Delimiter', '\t');
-
-disp('5. 생성된 속도 경로를 바이너리 파일로 저장합니다...');
-try
-    vel_binary_file = fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_curve.bin');
-    % vel_binary_file = fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_concave.bin');
-    fileID_vel = fopen(vel_binary_file, 'w');
-    if fileID_vel == -1, error('속도 프로파일 파일을 열 수 없습니다.'); end
-
-    fwrite(fileID_vel, traj_vel_profile', 'single'); % 데이터 전치하여 저장
-    fclose(fileID_vel);
-
-    fprintf('==> 속도 경로 바이너리 파일 저장 완료!\n   - 파일 위치: %s\n', vel_binary_file);
-catch ME
-    fprintf('==> 속도 바이너리 파일 저장 중 오류 발생:\n');
-    disp(ME.message);
-    if exist('fileID_vel', 'var') && fileID_vel ~= -1, fclose(fileID_vel); end
-end
+% traj_pos_profile = [final_trajectory.position, final_trajectory.normal];
+% traj_vel_profile = [final_trajectory.vel_tool, final_trajectory.omega_tool];
+% 
+% writematrix(traj_pos_profile, fullfile(data_cd, 'Robot_TCP_Pos_profile_test_curve.txt'), 'Delimiter', '\t');
+% writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_curve.txt'), 'Delimiter', '\t');
+% 
+% % writematrix(traj_pos_profile, fullfile(data_cd, 'Robot_TCP_Pos_profile_test_concave.txt'), 'Delimiter', '\t');
+% % writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_concave.txt'), 'Delimiter', '\t');
+% 
+% disp('5. 생성된 속도 경로를 바이너리 파일로 저장합니다...');
+% try
+%     vel_binary_file = fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_curve.bin');
+%     % vel_binary_file = fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_concave.bin');
+%     fileID_vel = fopen(vel_binary_file, 'w');
+%     if fileID_vel == -1, error('속도 프로파일 파일을 열 수 없습니다.'); end
+% 
+%     fwrite(fileID_vel, traj_vel_profile', 'single'); % 데이터 전치하여 저장
+%     fclose(fileID_vel);
+% 
+%     fprintf('==> 속도 경로 바이너리 파일 저장 완료!\n   - 파일 위치: %s\n', vel_binary_file);
+% catch ME
+%     fprintf('==> 속도 바이너리 파일 저장 중 오류 발생:\n');
+%     disp(ME.message);
+%     if exist('fileID_vel', 'var') && fileID_vel ~= -1, fclose(fileID_vel); end
+% end

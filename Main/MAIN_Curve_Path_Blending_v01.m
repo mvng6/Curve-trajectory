@@ -20,21 +20,29 @@ disp('CSV 파일에서 경로 데이터를 로딩합니다...');
 try
     data = readmatrix('test_curve_plate_traj.csv');
     % data = readmatrix('test_curve_traj.csv');
-    P = data(:,1:3); % 위치 데이터 (N x 3)
-    N = data(:,4:6); % 법선 벡터 데이터 (N x 3)
+    
+    init_P = data(:,1:3); % 위치 데이터 (N x 3)
+    init_N = data(:,4:6); % 법선 벡터 데이터 (N x 3)
     
     % 법선 벡터가 단위 벡터가 아닐 수 있으므로 정규화를 수행합니다. (안전 장치)
-    N = N ./ vecnorm(N, 2, 2);
+    init_N = init_N ./ vecnorm(init_N, 2, 2);
     
-    fprintf('성공: %d개의 포인트 데이터를 로드했습니다.\n\n', size(P, 1));
+    fprintf('성공: %d개의 포인트 데이터를 로드했습니다.\n\n', size(init_P, 1));
 catch ME
     error('오류: test_curve_traj.csv 파일을 찾을 수 없거나 읽을 수 없습니다. 파일 경로를 확인해주세요.\n오류 메시지: %s', ME.message);
 end
 
-blend_flag = false;
+P(:,1) = init_P(:,2);
+P(:,2) = init_P(:,1);
+P(:,3) = init_P(:,3);
+
+N(:,1) = init_N(:,2);
+N(:,2) = init_N(:,1);
+N(:,3) = init_N(:,3);
 
 %% 2. 블렌딩 적용
 % true & false를 이용해 블렌딩을 적용할지 말지를 선택
+blend_flag = false;
 
 if (blend_flag == true)
     config.blending.distance = 5.0; % 블렌딩 거리 (mm)
@@ -164,7 +172,7 @@ subplot(2,2,2);
 plot(final_trajectory.time, final_trajectory.vel_tool);
 xlim([0 final_trajectory.time(end)]);
 ylim([-0.5 6]);
-title('Linear velocity by TCP');
+title('Linear velocity of TCP');
 xlabel('Time (s)'); ylabel('Linear vel. (mm/s)');
 legend('v_x', 'v_y', 'v_z', 'Location', 'northeastoutside');
 grid on;
@@ -174,22 +182,22 @@ subplot(2,2,4);
 plot(final_trajectory.time, final_trajectory.omega_tool);
 xlim([0 final_trajectory.time(end)]);
 ylim([-4 4]);
-title('Angular velocity by TCP');
+title('Angular velocity of TCP');
 xlabel('Time (s)'); ylabel('Angular vel. (deg/s)');
 legend('\omega_x', '\omega_y', '\omega_z', 'Location', 'northeastoutside');
 grid on;
 
 %% 경로 데이터 저장
-Process_traj = [points, normals];
-writematrix(Process_traj, fullfile(data_cd, 'Process_Curve_Plate_Traj.csv'), 'Delimiter', '\t');
-disp('리샘플링 된 경로 저장 완료.');
+% Process_traj = [points, normals];
+% writematrix(Process_traj, fullfile(data_cd, 'Process_Curve_Plate_Traj.csv'), 'Delimiter', '\t');
+% disp('리샘플링 된 경로 저장 완료.');
 
-% traj_pos_profile = [final_trajectory.position, final_trajectory.normal];
-% traj_vel_profile = [final_trajectory.vel_tool, final_trajectory.omega_tool];
-% 
-% writematrix(traj_pos_profile, fullfile(data_cd, 'Robot_TCP_Pos_profile_test.txt'), 'Delimiter', '\t');
-% writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile_test.txt'), 'Delimiter', '\t');
-% 
+traj_pos_profile = [final_trajectory.position, final_trajectory.normal];
+traj_vel_profile = [final_trajectory.vel_tool, final_trajectory.omega_tool];
+
+writematrix(traj_pos_profile, fullfile(data_cd, 'Robot_TCP_Pos_profile_test_init.csv'), 'Delimiter', '\t');
+writematrix(traj_vel_profile, fullfile(data_cd, 'Robot_TCP_Velocity_profile_test_init.csv'), 'Delimiter', '\t');
+
 % disp('5. 생성된 속도 경로를 바이너리 파일로 저장합니다...');
 % try
 %     vel_binary_file = fullfile(data_cd, 'Robot_TCP_Velocity_profile_test.bin');
