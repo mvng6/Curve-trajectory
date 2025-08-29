@@ -1,3 +1,6 @@
+%%
+% Info
+%
 % 파이썬 코드(extract_z_vector)를 통해 STL로부터 추출한 초기 금형 형상
 % 데이터(indexed_path_data_Y_axis)를 재정렬 및 전처리하는 코드
 

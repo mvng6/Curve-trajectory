@@ -79,14 +79,14 @@ disp('  -> 시각화 완료.');
 
 
 %% 5. CSV 파일로 저장
-disp('5. 경로 데이터를 CSV 파일로 저장합니다...');
-output_filename = 'test_convex_traj.csv';
-
-% 위치(P)와 법선 벡터(N) 데이터를 하나의 행렬로 결합
-output_data = [P, N];
-
-% CSV 파일로 저장
-writematrix(output_data, fullfile(data_cd, output_filename));
-
-fprintf('\n==> 성공: 경로 데이터가 ''%s'' 파일로 저장되었습니다.\n', output_filename);
-fprintf('    이제 MAIN_Curve_Path_Blending.m 스크립트를 실행하여 테스트할 수 있습니다.\n');
+% disp('5. 경로 데이터를 CSV 파일로 저장합니다...');
+% output_filename = 'test_convex_traj.csv';
+% 
+% % 위치(P)와 법선 벡터(N) 데이터를 하나의 행렬로 결합
+% output_data = [P, N];
+% 
+% % CSV 파일로 저장
+% writematrix(output_data, fullfile(data_cd, output_filename));
+% 
+% fprintf('\n==> 성공: 경로 데이터가 ''%s'' 파일로 저장되었습니다.\n', output_filename);
+% fprintf('    이제 MAIN_Curve_Path_Blending.m 스크립트를 실행하여 테스트할 수 있습니다.\n');

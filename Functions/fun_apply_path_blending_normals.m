@@ -9,7 +9,7 @@ function [blended_path, blended_normals] = fun_apply_path_blending_normals(origi
         corner_idx = corner_indices(i);
         fprintf('--- 인덱스 %d 코너에 블렌딩 적용 ---\n', corner_idx);
         
-        % [수정] 위치와 법선 벡터를 모두 전달하고 결과를 받음
+        % 위치와 법선 벡터를 모두 전달하고 결과를 받음
         [blended_path, blended_normals] = fun_blend_single_corner_normals(blended_path, blended_normals, corner_idx, blend_dist);
     end
 end
